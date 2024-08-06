@@ -3,7 +3,7 @@ package pocketlog
 import (
 	"fmt"
 	"io"
-	// "os"
+	"os"
 )
 
 type Logger struct {
@@ -11,11 +11,14 @@ type Logger struct {
 	output    io.Writer
 }
 
-func New(threshold Level, output io.Writer) *Logger {
-	return &Logger{
-		threshold: threshold,
-		output:    output,
+func New(threshold Level, opts ...Option) *Logger {
+	lgr := &Logger{threshold: threshold, output: os.Stdout}
+
+	for _, configFunc := range opts {
+		configFunc(lgr)
 	}
+
+	return lgr
 }
 
 func (l *Logger) Debugf(format string, args ...any) {
